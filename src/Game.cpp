@@ -16,7 +16,11 @@ Game::~Game()
 // We call this once after the game class is instantiated
 bool Game::init()
 {
-
+	if (!background_texture.loadFromFile("../Data/Images/WhackaMole Worksheet/background.png"))
+	{
+		std::cout << "background didnt load";
+	}
+	background.setTexture(background_texture);
   return true;
 }
 
