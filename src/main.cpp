@@ -31,6 +31,15 @@ int main()
     sf::Time time = clock.restart();
     float dt = time.asSeconds();
 
+    while (const std::optional event= window.pollEvent())
+    {
+        if (event->is<sf::Event::Closed>())
+        {
+            window.close();
+        }
+    }
+    window.display();
+
     //'process inputs' element of the game loop
     while (const std::optional event = window.pollEvent())
     {
