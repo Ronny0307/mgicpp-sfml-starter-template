@@ -16,7 +16,21 @@ Game::~Game()
 // We call this once after the game class is instantiated
 bool Game::init()
 {
+	font.openFromFile("../Data/Fonts/open-sans/OpenSans-Regular.ttf");
+	background_texture.loadFromFile("../Data/Images/WhackaMole Worksheet/background.png");
+	std::string _menutext="Migration Immigration";
+	std::string _menutext2 = "Press Q to quit, Space to start";
 
+	menutext.setCharacterSize(60);
+	menutext2.setCharacterSize(60);
+	menutext.setString(_menutext);
+	menutext2.setString(_menutext2);
+	menutext.setFillColor(sf::Color::Blue);
+	menutext2.setFillColor(sf::Color::Blue);
+	menutext.setPosition(sf::Vector2f(260.0f,200.0f));
+	menutext2.setPosition(sf::Vector2f(190.0f, 300.0f));
+
+	currentstate = Gamestate::Menu;
   return true;
 }
 
@@ -24,13 +38,25 @@ bool Game::init()
 // use it for everything that needs to update between frames
 void Game::update(float dt)
 {
+	switch (currentstate)
+	{
+	 case Gamestate::Menu:
+		window.draw(menutext);
+		window.draw(menutext2);
 
+	}
 }
 
 // Runs after update, use it to tell the window what to draw this frame
 void Game::render()
 {
+	switch (currentstate)
+	{
+	case Gamestate::Menu:
+		window.draw(menutext);
+		window.draw(menutext2);
 
+	}
 }
 
 //Called by event polling when a MouseButtonPressed event is found
@@ -65,6 +91,17 @@ void Game::keyPressed(const sf::Event::KeyPressed* event)
 	if (event->scancode == sf::Keyboard::Scancode::W)
 	{
 		// W was pressed
+	}
+	if (event->scancode == sf::Keyboard::Scancode::Q)
+	{
+		window.close();
+	}
+	if (currentstate == Gamestate::Menu)
+	{
+		if (event->scancode == sf::Keyboard::Scancode::Space)
+		{
+			currentstate = Gamestate::Ingame;
+		}
 	}
 
 }
