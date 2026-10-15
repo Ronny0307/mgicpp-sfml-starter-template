@@ -16,8 +16,16 @@ Game::~Game()
 // We call this once after the game class is instantiated
 bool Game::init()
 {
+	background_texture = new sf::Texture();
 	font.openFromFile("../Data/Fonts/open-sans/OpenSans-Regular.ttf");
-	background_texture.loadFromFile("../Data/Images/WhackaMole Worksheet/background.png");
+	if(!background_texture->loadFromFile("../Data/Images/WhackaMole Worksheet/background.png"))
+	{
+		std::cout << "background texture not found";
+		return 0;
+	}
+	
+	background = new sf::Sprite(*background_texture);
+
 	std::string _menutext="Migration Immigration";
 	std::string _menutext2 = "Press Q to quit, Space to start";
 
@@ -41,8 +49,8 @@ void Game::update(float dt)
 	switch (currentstate)
 	{
 	 case Gamestate::Menu:
-		window.draw(menutext);
-		window.draw(menutext2);
+
+		break;
 
 	}
 }
@@ -55,6 +63,10 @@ void Game::render()
 	case Gamestate::Menu:
 		window.draw(menutext);
 		window.draw(menutext2);
+		break;
+	case Gamestate::Ingame:
+		window.draw(*background);
+		break;
 
 	}
 }
