@@ -21,6 +21,8 @@ Game::~Game()
 bool Game::init()
 {
 	background_texture = new sf::Texture();
+
+
 	font.openFromFile("../Data/Fonts/open-sans/OpenSans-Regular.ttf");
 	if(!background_texture->loadFromFile("../Data/Images/WhackaMole Worksheet/background.png"))
 	{
@@ -46,6 +48,7 @@ bool Game::init()
 	menutext2.setPosition(sf::Vector2f(190.0f, 300.0f));
 
 	currentstate = Gamestate::Menu;
+	newAnimal();
   return true;
 }
 
@@ -82,6 +85,9 @@ void Game::newAnimal()
 	passport->setTexture(passports[passport_index], true);
 	passport->setScale({ 0.6, 0.6 });
 	passport->setPosition(sf::Vector2f(window.getSize().x / 2, window.getSize().y / 3));
+
+	character = new sf::Sprite(animals[animal_index]);
+	passport = new sf::Sprite(passports[passport_index]);
 }
 
 // Runs after update, use it to tell the window what to draw this frame
