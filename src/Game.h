@@ -17,6 +17,8 @@ class Game
   void keyPressed(const sf::Event::KeyPressed* event);
   void keyReleased(const sf::Event::KeyReleased* event);
 
+  void newAnimal();
+
  private:
   sf::RenderWindow& window;
   sf::Font font;
@@ -26,6 +28,12 @@ class Game
   sf::Text menutext2{ font };
   enum Gamestate { Ingame, Menu, Inspection };
   Gamestate currentstate;
+
+  sf::Sprite* character;
+  sf::Sprite* passport;
+  sf::Texture* animals = new sf::Texture[3];
+  sf::Texture* passports = new sf::Texture[3];
+  bool should_accept;
 };
 
 #endif // SFML_GAME_H

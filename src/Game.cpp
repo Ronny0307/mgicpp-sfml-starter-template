@@ -10,6 +10,10 @@ Game::Game(sf::RenderWindow& game_window)
 
 Game::~Game()
 {
+	delete[]animals;
+	delete[]passports;
+	delete[]character;
+	delete[]passport;
 
 }
 
@@ -25,6 +29,9 @@ bool Game::init()
 	}
 	
 	background = new sf::Sprite(*background_texture);
+
+	character = new sf::Sprite(animals[0]);
+	passport = new sf::Sprite(passports[0]);
 
 	std::string _menutext="Migration Immigration";
 	std::string _menutext2 = "Press Q to quit, Space to start";
@@ -55,6 +62,28 @@ void Game::update(float dt)
 	}
 }
 
+void Game::newAnimal()
+{
+	int animal_index = rand() % 3;
+	int	passport_index = rand() % 3;
+
+	if (animal_index == passport_index)
+	{
+		should_accept = true;
+	}
+	else
+	{
+		should_accept = false;
+	}
+	character->setTexture(animals[animal_index],true);
+	character->setScale({ 1.5, 1.5 });
+	character->setPosition(sf::Vector2f(window.getSize().x / 12, window.getSize().y / 12));
+
+	passport->setTexture(passports[passport_index], true);
+	passport->setScale({ 0.6, 0.6 });
+	passport->setPosition(sf::Vector2f(window.getSize().x / 2, window.getSize().y / 3));
+}
+
 // Runs after update, use it to tell the window what to draw this frame
 void Game::render()
 {
@@ -66,6 +95,8 @@ void Game::render()
 		break;
 	case Gamestate::Ingame:
 		window.draw(*background);
+		window.draw(*character);
+		window.draw(*passport);
 		break;
 
 	}
