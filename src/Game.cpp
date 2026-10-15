@@ -22,6 +22,17 @@ bool Game::init()
 {
 	background_texture = new sf::Texture();
 
+	animals = new sf::Texture[3];
+	passports = new sf::Texture[3];
+
+	//animals[0]->
+	animals[0].loadFromFile("../Data/Images/Critter Crossing/elephant.png");
+	animals[1].loadFromFile("../Data/Images/Critter Crossing/moose.png");
+	animals[2].loadFromFile("../Data/Images/Critter Crossing/penguin.png");
+
+	passports[0].loadFromFile("../Data/Images/Critter Crossing/elephant_passport.png");
+	passports[1].loadFromFile("../Data/Images/Critter Crossing/moose_passport.png");
+	passports[2].loadFromFile("../Data/Images/Critter Crossing/penguin_passport.png");
 
 	font.openFromFile("../Data/Fonts/open-sans/OpenSans-Regular.ttf");
 	if(!background_texture->loadFromFile("../Data/Images/WhackaMole Worksheet/background.png"))
@@ -31,9 +42,9 @@ bool Game::init()
 	}
 	
 	background = new sf::Sprite(*background_texture);
-
 	character = new sf::Sprite(animals[0]);
 	passport = new sf::Sprite(passports[0]);
+
 
 	std::string _menutext="Migration Immigration";
 	std::string _menutext2 = "Press Q to quit, Space to start";

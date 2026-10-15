@@ -31,8 +31,8 @@ class Game
 
   sf::Sprite* character;
   sf::Sprite* passport;
-  sf::Texture* animals = new sf::Texture[3];
-  sf::Texture* passports = new sf::Texture[3];
+  sf::Texture* animals;
+  sf::Texture* passports;
   bool should_accept;
 };
 
