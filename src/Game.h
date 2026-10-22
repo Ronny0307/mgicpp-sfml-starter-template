@@ -31,6 +31,10 @@ class Game
   sf::Text menutext2{ font };
   sf::Text menutext3{ font };
 
+  sf::Text queuetext{ font };
+
+  sf::Text daytext { font };
+
   sf::Text evaluation{ font };
   sf::Text score{ font };
   enum Gamestate { Ingame, Menu, Inspection };
@@ -56,6 +60,10 @@ class Game
   int correctanimals = 0;
   int incorrectanimals = 0;
   bool dragging = false;
+  int day = 1;
+  int prev_correct = 0;
+  int prev_incorrect = 0;
+  int queue_left = 4;
 
   sf::Sprite* dragged = nullptr;
   bool should_accept;

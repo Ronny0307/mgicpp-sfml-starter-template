@@ -74,6 +74,15 @@ bool Game::init()
 	menutext2.setPosition(sf::Vector2f(250.0f, 300.0f));
 	menutext3.setPosition(sf::Vector2f(200.0f, 400.0f));
 
+	queuetext.setString("Queue: " + std::to_string(queue_left));
+	queuetext.setCharacterSize(60);
+	queuetext.setFillColor(sf::Color::Black);
+	queuetext.setPosition(sf::Vector2f(60.0f, 10.0f));
+
+	daytext.setCharacterSize(60);
+	daytext.setFillColor(sf::Color::Yellow);
+	daytext.setPosition(sf::Vector2f(260.0f, 100.0f));
+
 	evaluation.setCharacterSize(60);
 	evaluation.setFillColor(sf::Color::Yellow);
 	evaluation.setPosition(sf::Vector2f(260.0f, 200.0f));
@@ -141,6 +150,7 @@ void Game::newAnimal()
 	passport->setTexture(passports[passport_index], true);
 	passport->setScale({ 0.6, 0.6 });
 	passport->setPosition(sf::Vector2f(window.getSize().x / 2, window.getSize().y / 2));
+	queuetext.setString("Queue: " + std::to_string(queue_left));
 }
 
 void Game::dragsprite(sf::Sprite* sprite)
@@ -169,6 +179,7 @@ void Game::render()
 		window.draw(*background);
 		window.draw(*character);
 		window.draw(*passport);
+		window.draw(queuetext);
 		if (openselection)
 		{
 			window.draw(*acceptbutton);
@@ -177,6 +188,7 @@ void Game::render()
 		break;
 	case Gamestate::Inspection:
 		window.draw(evaluation);
+		window.draw(daytext);
 		window.draw(score);
 		break;
 	}
@@ -207,6 +219,22 @@ void Game::returnpassport()
 
 void Game::nextanimal()
 {
+	if (queue_left > 1)
+	{
+		queue_left--;
+	}
+	else
+	{
+		
+		if (currentstate == Gamestate::Ingame)
+		{
+			currentstate = Gamestate::Inspection;
+			currentstate = Gamestate::Inspection;
+			score.setString("Score: " + std::to_string((correctanimals - incorrectanimals + prev_correct - prev_incorrect) * 100));
+			evaluation.setString("Correct: " + std::to_string(correctanimals) + " Incorrect: " + std::to_string(incorrectanimals));
+			daytext.setString("Day: " + std::to_string(day));
+		}
+	}
 	stamped = false;
 	newAnimal();
 }
@@ -315,9 +343,33 @@ void Game::keyPressed(const sf::Event::KeyPressed* event)
 	}
 	if (event->scancode == sf::Keyboard::Scancode::X)
 	{
-		currentstate = Gamestate::Inspection;
-		score.setString("Score: " + std::to_string((correctanimals - incorrectanimals) * 100));
-		evaluation.setString("Correct: " + std::to_string(correctanimals) + " Incorrect: " + std::to_string(incorrectanimals));
+		if (currentstate == Gamestate::Ingame)
+		{
+			currentstate = Gamestate::Inspection;
+			score.setString("Score: " + std::to_string((correctanimals - incorrectanimals + prev_correct - prev_incorrect) * 100));
+			evaluation.setString("Correct: " + std::to_string(correctanimals) + " Incorrect: " + std::to_string(incorrectanimals));
+			daytext.setString("Day: " + std::to_string(day));
+		}
+		else if (currentstate == Gamestate::Inspection)
+		{
+			currentstate = Gamestate::Ingame;
+			prev_correct = correctanimals;
+			prev_incorrect = incorrectanimals;
+			correctanimals = 0;
+			incorrectanimals = 0;
+			day++;
+			queue_left = rand() % 2 + 4;
+			if (day > 3)
+			{
+				queue_left += rand() % 3;
+			}
+			queuetext.setString("Queue: " + std::to_string(queue_left));
+			newAnimal();
+		}
+		{
+
+		}
+		
 	}
 	if (currentstate == Gamestate::Menu)
 	{
