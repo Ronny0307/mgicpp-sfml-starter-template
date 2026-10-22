@@ -12,6 +12,7 @@ class Game
   bool init();
   void update(float dt);
   void render();
+  void dragsprite(sf::Sprite* sprite);
   void mouseButtonPressed(const sf::Event::MouseButtonPressed* event);
   void mouseButtonReleased(const sf::Event::MouseButtonReleased* event);
   void keyPressed(const sf::Event::KeyPressed* event);
@@ -33,6 +34,18 @@ class Game
   sf::Sprite* passport;
   sf::Texture* animals;
   sf::Texture* passports;
+
+  sf::Sprite* accepted;
+  sf::Sprite* rejected;
+  sf::Texture* accepted_texture;
+  sf::Texture* rejected_texture;
+
+  sf::Sprite* acceptbutton;
+  sf::Sprite* rejectbutton;
+  sf::Texture* acceptbutton_texture;
+  sf::Texture* rejectbutton_texture;
+
+  sf::Sprite* dragged = nullptr;
   bool should_accept;
 };
 
