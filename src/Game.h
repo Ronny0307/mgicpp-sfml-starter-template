@@ -29,6 +29,7 @@ class Game
   sf::Sprite* background;
   sf::Text menutext{ font };
   sf::Text menutext2{ font };
+  sf::Text menutext3{ font };
 
   sf::Text evaluation{ font };
   sf::Text score{ font };

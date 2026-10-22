@@ -59,15 +59,20 @@ bool Game::init()
 
 	std::string _menutext="Migration Immigration";
 	std::string _menutext2 = "Press Q to quit, Space to start";
+	std::string _menutext3 = "Pressing X ends game and reveals score";
 
 	menutext.setCharacterSize(60);
-	menutext2.setCharacterSize(60);
+	menutext2.setCharacterSize(40);
+	menutext3.setCharacterSize(40);
 	menutext.setString(_menutext);
 	menutext2.setString(_menutext2);
+	menutext3.setString(_menutext3);
 	menutext.setFillColor(sf::Color::Blue);
 	menutext2.setFillColor(sf::Color::Blue);
+	menutext3.setFillColor(sf::Color::Blue);
 	menutext.setPosition(sf::Vector2f(260.0f,200.0f));
-	menutext2.setPosition(sf::Vector2f(190.0f, 300.0f));
+	menutext2.setPosition(sf::Vector2f(250.0f, 300.0f));
+	menutext3.setPosition(sf::Vector2f(200.0f, 400.0f));
 
 	evaluation.setCharacterSize(60);
 	evaluation.setFillColor(sf::Color::Yellow);
@@ -158,6 +163,7 @@ void Game::render()
 	case Gamestate::Menu:
 		window.draw(menutext);
 		window.draw(menutext2);
+		window.draw(menutext3);
 		break;
 	case Gamestate::Ingame:
 		window.draw(*background);
