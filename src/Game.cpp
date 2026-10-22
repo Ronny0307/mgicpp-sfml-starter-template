@@ -1,5 +1,7 @@
 
 #include "Game.h"
+#include <memory>
+#include <vector>
 #include <iostream>
 
 Game::Game(sf::RenderWindow& game_window)
@@ -67,6 +69,13 @@ bool Game::init()
 	menutext.setPosition(sf::Vector2f(260.0f,200.0f));
 	menutext2.setPosition(sf::Vector2f(190.0f, 300.0f));
 
+	acceptbutton = new sf::Sprite(*acceptbutton_texture);
+	rejectbutton = new sf::Sprite(*rejectbutton_texture);
+	accepted = new sf::Sprite(*accepted_texture);
+	rejected = new sf::Sprite(*rejected_texture);
+	acceptbutton->setPosition(sf::Vector2f(window.getSize().x / 2 - 200, window.getSize().y / 1.5));
+	rejectbutton->setPosition(sf::Vector2f(window.getSize().x / 2 + 100, window.getSize().y / 1.5));
+
 	currentstate = Gamestate::Menu;
 	newAnimal();
   return true;
@@ -107,11 +116,11 @@ void Game::newAnimal()
 
 	character->setTexture(animals[animal_index], true);
 	character->setScale({ 1.6, 1.6 });
-	character->setPosition(sf::Vector2f(window.getSize().x / 12, window.getSize().y / 12));
+	character->setPosition(sf::Vector2f(window.getSize().x / 12, window.getSize().y / 9));
 
 	passport->setTexture(passports[passport_index], true);
 	passport->setScale({ 0.6, 0.6 });
-	passport->setPosition(sf::Vector2f(window.getSize().x / 2, window.getSize().y / 3));
+	passport->setPosition(sf::Vector2f(window.getSize().x / 2, window.getSize().y / 2));
 }
 
 void Game::dragsprite(sf::Sprite* sprite)
@@ -139,6 +148,11 @@ void Game::render()
 		window.draw(*background);
 		window.draw(*character);
 		window.draw(*passport);
+		if (openselection)
+		{
+			window.draw(*acceptbutton);
+			window.draw(*rejectbutton);
+		}
 		break;
 
 	}
@@ -162,6 +176,56 @@ void Game::mouseButtonPressed(const sf::Event::MouseButtonPressed* event)
 		}
 
 		//Left mouse button was pressed
+	}
+	if (event->button == sf::Mouse::Button::Right)
+	{
+		switch(currentstate)
+		{
+		case Gamestate::Ingame:
+			if (openselection == false)
+			{
+				openselection = true;
+			}
+			else
+			{
+				if (position.x > acceptbutton->getPosition().x && position.x < acceptbutton->getPosition().x + acceptbutton->getGlobalBounds().size.x)
+				{
+					if (
+						position.y > acceptbutton->getPosition().y &&
+						position.y < acceptbutton->getPosition().y + acceptbutton->getGlobalBounds().size.y)
+					  {
+						if (should_accept)
+						{
+							correctanimals++;
+						}
+						else
+						{
+							incorrectanimals++;
+						}
+						openselection = false;
+						stamped = true;
+				      }
+				}
+				else if(position.x > rejectbutton->getPosition().x && position.x < rejectbutton->getPosition().x + rejectbutton->getGlobalBounds().size.x)
+				{
+					if (position.y > rejectbutton->getPosition().y && position.y < rejectbutton->getPosition().y + rejectbutton->getGlobalBounds().size.y)
+					{
+						if (!should_accept)
+						{
+							correctanimals++;
+						}
+						else
+						{
+							incorrectanimals++;
+						}
+						openselection = false;
+						stamped = true;
+					}
+				}
+			}
+			
+			break;
+		}
 	}
 }
 

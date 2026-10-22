@@ -1,5 +1,7 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
+#include <memory>
+#include <vector>
 #include "Game.h"
 
 

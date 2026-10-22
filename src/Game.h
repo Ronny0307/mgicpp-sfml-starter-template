@@ -45,6 +45,11 @@ class Game
   sf::Texture* acceptbutton_texture;
   sf::Texture* rejectbutton_texture;
 
+  bool openselection = false;
+  bool stamped = false;
+  int correctanimals;
+  int incorrectanimals;
+
   sf::Sprite* dragged = nullptr;
   bool should_accept;
 };
