@@ -69,6 +69,15 @@ bool Game::init()
 	menutext.setPosition(sf::Vector2f(260.0f,200.0f));
 	menutext2.setPosition(sf::Vector2f(190.0f, 300.0f));
 
+	evaluation.setCharacterSize(60);
+	evaluation.setFillColor(sf::Color::Yellow);
+	evaluation.setPosition(sf::Vector2f(260.0f, 200.0f));
+	
+	score.setCharacterSize(60);
+	score.setFillColor(sf::Color::Yellow);
+	score.setPosition(sf::Vector2f(260.0f, 300.0f));
+	
+
 	acceptbutton = new sf::Sprite(*acceptbutton_texture);
 	rejectbutton = new sf::Sprite(*rejectbutton_texture);
 	accepted = new sf::Sprite(*accepted_texture);
@@ -91,8 +100,14 @@ void Game::update(float dt)
 		break;
 	 case Gamestate::Ingame:
 		 dragsprite(dragged);
+		 if (dragging == false)
+		 {
+			 returnpassport();
+		 }
 		 break;
-
+	 case Gamestate::Inspection:
+		 
+		 break;
 	}
 }
 
@@ -154,9 +169,42 @@ void Game::render()
 			window.draw(*rejectbutton);
 		}
 		break;
-
+	case Gamestate::Inspection:
+		window.draw(evaluation);
+		window.draw(score);
+		break;
 	}
 }
+void Game::returnpassport()
+{
+	//std::cout << dragging;
+	//std::cout << stamped;
+	if (dragging == false && stamped)
+	{
+		if (passport->getGlobalBounds().findIntersection({ character->getGlobalBounds() }))
+
+		/*if (character->getPosition().x > passport->getPosition().x && character->getPosition().x < passport->getPosition().x
+			+ passport->getGlobalBounds().size.x)*/
+		{
+			/*if (character->getPosition().y > passport->getPosition().y && character->getPosition().y < passport->getPosition().y
+				+ passport->getGlobalBounds().size.y)*/
+
+			{
+				dragged = nullptr;
+				dragging = false;
+				passport->setPosition(sf::Vector2f(window.getSize().x / 2, window.getSize().y / 2));
+				nextanimal();
+			}
+		}
+	}
+}
+
+void Game::nextanimal()
+{
+	stamped = false;
+	newAnimal();
+}
+
 
 //Called by event polling when a MouseButtonPressed event is found
 void Game::mouseButtonPressed(const sf::Event::MouseButtonPressed* event)
@@ -170,9 +218,16 @@ void Game::mouseButtonPressed(const sf::Event::MouseButtonPressed* event)
 	if (event->button == sf::Mouse::Button::Left)
 	{
 		sf::Vector2f click = static_cast<sf::Vector2f>(event->position);
-		if (passport->getGlobalBounds().contains(click))
+		if (passport->getGlobalBounds().contains(click)&&dragging==false)
 		{
 			dragged = passport;
+			dragging = true;
+		}
+		else if (dragging)
+		{
+			dragged = nullptr;
+			dragging = false;
+			
 		}
 
 		//Left mouse button was pressed
@@ -182,11 +237,11 @@ void Game::mouseButtonPressed(const sf::Event::MouseButtonPressed* event)
 		switch(currentstate)
 		{
 		case Gamestate::Ingame:
-			if (openselection == false)
+			if (openselection == false && stamped==false)
 			{
 				openselection = true;
 			}
-			else
+			else if(stamped==false)
 			{
 				if (position.x > acceptbutton->getPosition().x && position.x < acceptbutton->getPosition().x + acceptbutton->getGlobalBounds().size.x)
 				{
@@ -223,7 +278,8 @@ void Game::mouseButtonPressed(const sf::Event::MouseButtonPressed* event)
 					}
 				}
 			}
-			
+			//std::cout << correctanimals;
+			//std::cout << incorrectanimals;
 			break;
 		}
 	}
@@ -250,6 +306,12 @@ void Game::keyPressed(const sf::Event::KeyPressed* event)
 	if (event->scancode == sf::Keyboard::Scancode::Q)
 	{
 		window.close();
+	}
+	if (event->scancode == sf::Keyboard::Scancode::X)
+	{
+		currentstate = Gamestate::Inspection;
+		score.setString("Score: " + std::to_string((correctanimals - incorrectanimals) * 100));
+		evaluation.setString("Correct: " + std::to_string(correctanimals) + " Incorrect: " + std::to_string(incorrectanimals));
 	}
 	if (currentstate == Gamestate::Menu)
 	{

@@ -12,6 +12,8 @@ class Game
   bool init();
   void update(float dt);
   void render();
+  void nextanimal();
+  void returnpassport();
   void dragsprite(sf::Sprite* sprite);
   void mouseButtonPressed(const sf::Event::MouseButtonPressed* event);
   void mouseButtonReleased(const sf::Event::MouseButtonReleased* event);
@@ -27,6 +29,9 @@ class Game
   sf::Sprite* background;
   sf::Text menutext{ font };
   sf::Text menutext2{ font };
+
+  sf::Text evaluation{ font };
+  sf::Text score{ font };
   enum Gamestate { Ingame, Menu, Inspection };
   Gamestate currentstate;
 
@@ -47,8 +52,9 @@ class Game
 
   bool openselection = false;
   bool stamped = false;
-  int correctanimals;
-  int incorrectanimals;
+  int correctanimals = 0;
+  int incorrectanimals = 0;
+  bool dragging = false;
 
   sf::Sprite* dragged = nullptr;
   bool should_accept;
