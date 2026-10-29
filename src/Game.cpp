@@ -28,6 +28,7 @@ bool Game::init()
 	acceptbutton_texture = new sf::Texture();
 	rejectbutton_texture = new sf::Texture();
 
+
 	animals = new sf::Texture[3];
 	passports = new sf::Texture[3];
 
@@ -61,6 +62,7 @@ bool Game::init()
 	std::string _menutext2 = "Press Q to quit, Space to start";
 	std::string _menutext3 = "Pressing X ends game and reveals score";
 
+
 	menutext.setCharacterSize(60);
 	menutext2.setCharacterSize(40);
 	menutext3.setCharacterSize(40);
@@ -78,6 +80,10 @@ bool Game::init()
 	queuetext.setCharacterSize(60);
 	queuetext.setFillColor(sf::Color::Black);
 	queuetext.setPosition(sf::Vector2f(60.0f, 10.0f));
+
+	passportyear.setCharacterSize(60);
+	passportyear.setFillColor(sf::Color::Red);
+	passportyear.setPosition(sf::Vector2f(260.0f, 400.0f));
 
 	daytext.setCharacterSize(60);
 	daytext.setFillColor(sf::Color::Yellow);
@@ -99,6 +105,7 @@ bool Game::init()
 	acceptbutton->setPosition(sf::Vector2f(window.getSize().x / 2 - 200, window.getSize().y / 1.5));
 	rejectbutton->setPosition(sf::Vector2f(window.getSize().x / 2 + 100, window.getSize().y / 1.5));
 
+
 	currentstate = Gamestate::Menu;
 	newAnimal();
   return true;
@@ -113,11 +120,17 @@ void Game::update(float dt)
 	 case Gamestate::Menu:
 		break;
 	 case Gamestate::Ingame:
+
+		 
+
 		 dragsprite(dragged);
 		 if (dragging == false)
 		 {
 			 returnpassport();
 		 }
+		 accepted->setPosition(sf::Vector2f(passport->getPosition().x + 25, passport->getPosition().y + 20));
+		 rejected->setPosition(sf::Vector2f(passport->getPosition().x + 25, passport->getPosition().y + 20));
+		 passportyear.setPosition(sf::Vector2f(passport->getPosition().x + 35, passport->getPosition().y + 30));
 		 break;
 	 case Gamestate::Inspection:
 		 
@@ -127,10 +140,33 @@ void Game::update(float dt)
 
 void Game::newAnimal()
 {
+	stampstatus = approvestate::Unstamped;
 	int animal_index = rand() % 3;
 	int	passport_index = rand() % 3;
+	if (year_enabled)
+	{
+		if (rand() % 4 >= 2)
+		{
+			year = 2026+rand() % 8;
 
-	if (animal_index == passport_index)
+		}
+		else
+		{
+			year = 2025 - rand() % 48;
+		}
+	}
+	if (year_enabled)
+	{
+		if (animal_index == passport_index && year == 2026)
+		{
+			should_accept = true;
+		}
+		else
+		{
+			should_accept = false;
+		}
+	}
+	else if (animal_index == passport_index)
 	{
 		should_accept = true;
 	}
@@ -138,8 +174,12 @@ void Game::newAnimal()
 	{
 		should_accept = false;
 	}
+	if (year_enabled)
+	{
+		//std::string passportyear = std::to_string(year);
+		passportyear.setString(std::to_string(year));
+	}
 	
-
 	character = new sf::Sprite(animals[animal_index]);
 	passport = new sf::Sprite(passports[passport_index]);
 
@@ -180,13 +220,32 @@ void Game::render()
 		window.draw(*character);
 		window.draw(*passport);
 		window.draw(queuetext);
+		//window.draw(passportyear);
 		if (openselection)
 		{
 			window.draw(*acceptbutton);
 			window.draw(*rejectbutton);
 		}
+		if (year_enabled)
+		{
+			window.draw(passportyear);
+		}
+		switch (stampstatus)
+		{
+		case approvestate::Accept:
+		    window.draw(*accepted);
+			break;
+		case approvestate::Reject:
+			window.draw(*rejected);
+			break;
+		}
 		break;
 	case Gamestate::Inspection:
+		window.draw(evaluation);
+		window.draw(daytext);
+		window.draw(score);
+		break;
+	case Gamestate::Over:
 		window.draw(evaluation);
 		window.draw(daytext);
 		window.draw(score);
@@ -228,11 +287,20 @@ void Game::nextanimal()
 		
 		if (currentstate == Gamestate::Ingame)
 		{
-			currentstate = Gamestate::Inspection;
-			currentstate = Gamestate::Inspection;
-			score.setString("Score: " + std::to_string((correctanimals - incorrectanimals + prev_correct - prev_incorrect) * 100));
-			evaluation.setString("Correct: " + std::to_string(correctanimals) + " Incorrect: " + std::to_string(incorrectanimals));
-			daytext.setString("Day: " + std::to_string(day));
+			if (correctanimals < queue_max / 2)
+			{
+				currentstate = Gamestate::Over;
+				score.setString("Score: " + std::to_string((correctanimals - incorrectanimals + prev_correct - prev_incorrect) * 100));
+				evaluation.setString("Correct: " + std::to_string(correctanimals) + " Incorrect: " + std::to_string(incorrectanimals));
+				daytext.setString("Game Over, Day: " + std::to_string(day));
+			}
+			else
+			{
+				currentstate = Gamestate::Inspection;
+				score.setString("Score: " + std::to_string((correctanimals - incorrectanimals + prev_correct - prev_incorrect) * 100));
+				evaluation.setString("Correct: " + std::to_string(correctanimals) + " Incorrect: " + std::to_string(incorrectanimals));
+				daytext.setString("Day: " + std::to_string(day));
+			}
 		}
 	}
 	stamped = false;
@@ -286,13 +354,16 @@ void Game::mouseButtonPressed(const sf::Event::MouseButtonPressed* event)
 						if (should_accept)
 						{
 							correctanimals++;
+
 						}
 						else
 						{
 							incorrectanimals++;
+
 						}
 						openselection = false;
 						stamped = true;
+						stampstatus = approvestate::Accept;
 				      }
 				}
 				else if(position.x > rejectbutton->getPosition().x && position.x < rejectbutton->getPosition().x + rejectbutton->getGlobalBounds().size.x)
@@ -309,6 +380,7 @@ void Game::mouseButtonPressed(const sf::Event::MouseButtonPressed* event)
 						}
 						openselection = false;
 						stamped = true;
+						stampstatus = approvestate::Reject;
 					}
 				}
 			}
@@ -345,10 +417,21 @@ void Game::keyPressed(const sf::Event::KeyPressed* event)
 	{
 		if (currentstate == Gamestate::Ingame)
 		{
-			currentstate = Gamestate::Inspection;
-			score.setString("Score: " + std::to_string((correctanimals - incorrectanimals + prev_correct - prev_incorrect) * 100));
-			evaluation.setString("Correct: " + std::to_string(correctanimals) + " Incorrect: " + std::to_string(incorrectanimals));
-			daytext.setString("Day: " + std::to_string(day));
+			if (correctanimals < queue_max/2)
+			{
+				currentstate = Gamestate::Over;
+				score.setString("Score: " + std::to_string((correctanimals - incorrectanimals + prev_correct - prev_incorrect) * 100));
+				evaluation.setString("Correct: " + std::to_string(correctanimals) + " Incorrect: " + std::to_string(incorrectanimals));
+				daytext.setString("Game Over, Day: " + std::to_string(day));
+			}
+			else
+			{
+				currentstate = Gamestate::Inspection;
+				score.setString("Score: " + std::to_string((correctanimals - incorrectanimals + prev_correct - prev_incorrect) * 100));
+				evaluation.setString("Correct: " + std::to_string(correctanimals) + " Incorrect: " + std::to_string(incorrectanimals));
+				daytext.setString("Day: " + std::to_string(day));
+			}
+			
 		}
 		else if (currentstate == Gamestate::Inspection)
 		{
@@ -362,7 +445,9 @@ void Game::keyPressed(const sf::Event::KeyPressed* event)
 			if (day > 3)
 			{
 				queue_left += rand() % 3;
+				year_enabled = true;
 			}
+			queue_max = queue_left;
 			queuetext.setString("Queue: " + std::to_string(queue_left));
 			newAnimal();
 		}

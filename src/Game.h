@@ -37,7 +37,7 @@ class Game
 
   sf::Text evaluation{ font };
   sf::Text score{ font };
-  enum Gamestate { Ingame, Menu, Inspection };
+  enum Gamestate { Ingame, Menu, Inspection,Over };
   Gamestate currentstate;
 
   sf::Sprite* character;
@@ -55,6 +55,12 @@ class Game
   sf::Texture* acceptbutton_texture;
   sf::Texture* rejectbutton_texture;
 
+  bool year_enabled = false;
+  sf::Text passportyear{ font };
+  int year;
+  enum approvestate{Accept, Reject, Unstamped };
+  approvestate stampstatus=Unstamped;
+
   bool openselection = false;
   bool stamped = false;
   int correctanimals = 0;
@@ -64,6 +70,7 @@ class Game
   int prev_correct = 0;
   int prev_incorrect = 0;
   int queue_left = 4;
+  int queue_max = 4;
 
   sf::Sprite* dragged = nullptr;
   bool should_accept;
